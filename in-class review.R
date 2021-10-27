@@ -1,7 +1,7 @@
 library(tidyverse)
 library(broom)
 
-sleep_reaction <- read_csv("sleep.csv")
+sleep_reaction <- read_csv("data/sleep.csv")
 
 sleep_reaction$Days <- as.factor(sleep_reaction$Days)
 sleep_reaction$Subject <- as.factor(sleep_reaction$Subject)
@@ -21,9 +21,8 @@ summary(anova_sleep_reaction)
 tukey_sleep_reaction <- TukeyHSD(anova_sleep_reaction, which = 'Days:Group', conf.level = 0.95)
 
 plot(tukey_sleep_reaction)
-tukey_sleep_reaction
 
 tidy_tukey <- tidy(tukey_sleep_reaction)%>%
   filter(adj.p.value < 0.05)
 
-
+tidy_tukey
