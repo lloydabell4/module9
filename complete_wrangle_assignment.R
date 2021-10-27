@@ -1,8 +1,10 @@
 #Data Wrangling
+library(tidyverse)
 
-combine <- read_csv("combine.csv")
-position_guide <- read_csv("position_guide.csv")
-team_picking_categories <- read_csv("team-picking-categories.csv")
+
+combine <- read_csv("data/combine.csv")
+position_guide <- read_csv("data/position_guide.csv")
+team_picking_categories <- read_csv("data/team-picking-categories.csv")
 #from https://www.kaggle.com/kbanta11/nfl-combine
 
 
@@ -18,6 +20,9 @@ player_position <- left_join(combine, position_guide, by = "Pos")
 
 player_position <- player_position %>%
   separate('Drafted (tm/rnd/yr)', into = c("TEAM","Rnd","Pick","Year"), sep = " / ") 
+
+player_position <- player_position%>%
+  left_join(team_picking_categories, by = "TEAM")
 
 player_position <- replace_na(player_position,list(Rnd = "Not Drafted"))
 player_position$Rnd <- as.factor(player_position$Rnd)
@@ -37,10 +42,13 @@ top_picks <- c("1st","2nd","3rd")
 #data transformation for top picks
 by_round_picks <- combine_clean %>%
   filter(Rnd %in% top_picks)%>%
-  group_by(TEAM,Rnd)%>%
+  group_by(TEAM)%>%
   summarize(num_of_picks = n())%>%
   arrange()
 #how would you get the count for total picks 
+
+combine_clean%>%
+  count(Pos, TEAM = 'Jacksonville Jaguars')
 
 #most picks by Jags
 count_by_position <- combine_clean %>%
